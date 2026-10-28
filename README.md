@@ -5,6 +5,8 @@
   A native macOS app with sunburst and treemap views of your cloud bill.</p>
 </div>
 
+<p align="center"><img src="docs/screenshot.png" alt="Cloud Cost Map showing a sunburst of monthly costs by environment, service and resource" width="900"></p>
+
 ---
 
 ## Features
