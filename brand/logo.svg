@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024" role="img" aria-label="Cloud Cost Map">
+  <defs>
+    <linearGradient id="bg" x1="300" y1="100" x2="724" y2="924" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#312E81"/><stop offset="1" stop-color="#0F172A"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="512" cy="512" r="380" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#8C99FF" stop-opacity="0.28"/><stop offset="1" stop-color="#8C99FF" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect x="100.00" y="100.00" width="824.00" height="824.00" rx="185.00" fill="url(#bg)"/>
+  <rect x="100.00" y="100.00" width="824.00" height="824.00" rx="185.00" fill="url(#glow)"/>
+  <path fill="#3B82F6" d="M519.00 304.12 A208.00 208.00 0 0 1 570.48 711.61 L548.07 624.35 A118.00 118.00 0 0 0 519.00 394.21Z"/>
+  <path fill="#8B5CF6" d="M556.92 715.09 A208.00 208.00 0 0 1 304.97 532.04 L394.88 526.38 A118.00 118.00 0 0 0 534.52 627.83Z"/>
+  <path fill="#14B8A6" d="M304.09 518.07 A208.00 208.00 0 0 1 505.00 304.12 L505.00 394.21 A118.00 118.00 0 0 0 394.00 512.41Z"/>
+  <path fill="#60A5FA" d="M519.00 212.08 A300.00 300.00 0 0 1 810.89 486.18 L729.02 491.33 A218.00 218.00 0 0 0 519.00 294.11Z"/>
+  <path fill="#93C5FD" d="M811.77 500.15 A300.00 300.00 0 0 1 735.42 712.21 L675.62 656.05 A218.00 218.00 0 0 0 729.90 505.30Z"/>
+  <path fill="#F59E0B" d="M725.84 722.41 A300.00 300.00 0 0 1 593.37 800.76 L572.97 721.30 A218.00 218.00 0 0 0 666.04 666.26Z"/>
+  <path fill="#A78BFA" d="M579.81 804.24 A300.00 300.00 0 0 1 273.48 693.95 L339.84 645.73 A218.00 218.00 0 0 0 559.41 724.78Z"/>
+  <path fill="#2DD4BF" d="M212.23 523.85 A300.00 300.00 0 0 1 288.58 311.79 L348.38 367.95 A218.00 218.00 0 0 0 294.10 518.70Z"/>
+  <path fill="#5EEAD4" d="M298.16 301.59 A300.00 300.00 0 0 1 412.66 228.92 L438.01 306.94 A218.00 218.00 0 0 0 357.96 357.74Z"/>
+  <g fill="#FFFFFF">
+    <circle cx="470.00" cy="524.40" r="42.00"/>
+    <circle cx="523.20" cy="496.40" r="56.00"/>
+    <circle cx="570.80" cy="530.00" r="35.00"/>
+    <rect x="425.20" y="521.60" width="179.20" height="47.60" rx="23.80"/>
+  </g>
+</svg>
