@@ -11,7 +11,18 @@ struct SummaryStrip: View {
 
     private var previous: CostReport? { model.report(account.id, report.period.previous) }
 
+    /// Drops the least important cards until the strip fits, instead of
+    /// widening the detail column and pushing the chart off-centre.
     var body: some View {
+        ViewThatFits(in: .horizontal) {
+            strip(showsTrend: true, showsBudget: true)
+            strip(showsTrend: false, showsBudget: true)
+            strip(showsTrend: false, showsBudget: false)
+        }
+        .fixedSize(horizontal: false, vertical: true)
+    }
+
+    private func strip(showsTrend: Bool, showsBudget: Bool) -> some View {
         HStack(alignment: .top, spacing: 12) {
             StatCard(title: report.isPartial ? "Month to date" : "Billed", value: report.billed.money(report.currency),
                      footnote: report.credits < 0 ? "after \((-report.credits).money(report.currency)) credits" : report.period.title)
@@ -20,11 +31,12 @@ struct SummaryStrip: View {
                 StatCard(title: "Forecast", value: forecast.money(report.currency),
                          footnote: "at today’s pace, \(Int((report.period.elapsedFraction() * 100).rounded()))% through the month")
             }
-            BudgetCard(account: account, report: report)
-            TrendChart(history: history, selected: report.period, currency: report.currency)
-                .frame(minWidth: 220, maxWidth: .infinity)
+            if showsBudget { BudgetCard(account: account, report: report) }
+            if showsTrend {
+                TrendChart(history: history, selected: report.period, currency: report.currency)
+                    .frame(minWidth: 220, maxWidth: .infinity)
+            }
         }
-        .fixedSize(horizontal: false, vertical: true)
     }
 
     /// Against the same share of last month while the month is running, so the comparison is fair.

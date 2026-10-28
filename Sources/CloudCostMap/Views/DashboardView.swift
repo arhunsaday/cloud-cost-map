@@ -128,13 +128,13 @@ struct DashboardView: View {
                 }
             }
             .pickerStyle(.menu)
-            .fixedSize()
+            .frame(minWidth: 190)
             .help("Billing month")
         }
         ToolbarItemGroup(placement: .principal) {
             if let report, report.views.count > 1 {
                 Picker("Group by", selection: $preferences.viewID) {
-                    ForEach(report.views) { v in Label(v.title, systemImage: v.symbol).tag(v.id) }
+                    ForEach(report.views) { v in Text(v.title).tag(v.id) }
                 }
                 .pickerStyle(.segmented)
                 .help("Group costs by")
