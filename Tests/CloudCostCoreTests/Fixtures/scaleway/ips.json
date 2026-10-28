@@ -1,0 +1,4 @@
+[
+ {"address":"1.2.3.4","zone":"fr-par-1","server":{"id":"i2","name":"scw-k8s-prod-pool-def456"},"type":"routed_ipv4"},
+ {"address":"5.6.7.8","zone":"fr-par-1","server":null,"type":"routed_ipv4"}
+]

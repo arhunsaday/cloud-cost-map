@@ -1,0 +1,5 @@
+[
+ {"id":"i1","name":"scw-k8s-dev-pool-abc123","commercial_type":"DEV1-S","zone":"fr-par-1","tags":["kapsule=c-dev","pool-name=general"]},
+ {"id":"i2","name":"scw-k8s-prod-pool-def456","commercial_type":"DEV1-S","zone":"fr-par-1","tags":["kapsule=c-prod","pool-name=general"]},
+ {"id":"i3","name":"bastion","commercial_type":"DEV1-S","zone":"fr-par-2","tags":[]}
+]

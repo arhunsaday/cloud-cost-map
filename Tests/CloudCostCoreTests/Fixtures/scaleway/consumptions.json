@@ -1,0 +1,7 @@
+[
+ {"value":{"currency_code":"EUR","units":100,"nanos":0},"category_name":"Compute","product_name":"Instances","resource_name":"DEV1-S","sku":"/compute/dev1_s/run_fr-par-1","project_id":"p1"},
+ {"value":{"currency_code":"EUR","units":30,"nanos":500000000},"category_name":"Storage","product_name":"Block Storage","resource_name":"SBS 5K","sku":"/storage/block/sbs_5k/fr-par-1","project_id":"p1"},
+ {"value":{"currency_code":"EUR","units":3,"nanos":0},"category_name":"Network","product_name":"Flexible IP","resource_name":"IPv4","sku":"/network/ipam/ipv4/fr-par-1","project_id":"p1"},
+ {"value":{"currency_code":"EUR","units":12,"nanos":0},"category_name":"Mystery","product_name":"Quantum","resource_name":"qpu","sku":"/quantum/qpu/fr-par","project_id":"p2"},
+ {"value":{"currency_code":"EUR","units":-10,"nanos":0},"category_name":"Discount","product_name":"Credit","resource_name":"Voucher","sku":"/credit","project_id":"p1"}
+]

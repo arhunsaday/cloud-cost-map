@@ -1,0 +1,4 @@
+[
+ {"name":"c-prod_pvc-1","zone":"fr-par-1","size":20000000000,"references":[{"product_resource_id":"x"}]},
+ {"name":"old-data","zone":"fr-par-1","size":10000000000,"references":[]}
+]
