@@ -34,6 +34,15 @@
 | Demo | ✅ A fictional company, to try the app without credentials |
 | AWS, Azure, Google Cloud | Listed as *coming soon* — see [Adding a provider](#adding-a-provider) |
 
+## Install
+
+```bash
+brew trust --cask arhunsaday/tap/cloud-cost-map
+brew install --cask arhunsaday/tap/cloud-cost-map
+```
+
+Or download the DMG from [Releases](https://github.com/arhunsaday/cloud-cost-map/releases/latest) and drag **Cloud Cost Map** into Applications. Universal, macOS 15 or later, signed and notarized.
+
 ## Build and run
 
 Requires macOS 15+ and Xcode 16+ (Swift 6).
@@ -130,6 +139,7 @@ scripts/release.sh 1.2.0
 DMG). `DEVELOPER_ID="Developer ID Application: …"` picks an identity if you have several.
 
 Publish it by attaching the DMG to a GitHub Release (Releases → Draft a new release, tag `v1.2.0`).
+Then set `version` and `sha256` in [`Casks/cloud-cost-map.rb`](https://github.com/arhunsaday/homebrew-tap/blob/main/Casks/cloud-cost-map.rb) of the Homebrew tap.
 
 ### CI
 
