@@ -1,0 +1,36 @@
+[
+ {
+  "GroupDefinitions": [],
+  "ResultsByTime": [
+   {
+    "TimePeriod": {
+     "Start": "2026-09-01",
+     "End": "2026-10-01"
+    },
+    "Estimated": false,
+    "Groups": [],
+    "Total": {
+     "UnblendedCost": {
+      "Amount": "705",
+      "Unit": "USD"
+     }
+    }
+   },
+   {
+    "TimePeriod": {
+     "Start": "2026-10-01",
+     "End": "2026-11-01"
+    },
+    "Estimated": false,
+    "Groups": [],
+    "Total": {
+     "UnblendedCost": {
+      "Amount": "100",
+      "Unit": "USD"
+     }
+    }
+   }
+  ],
+  "DimensionValueAttributes": []
+ }
+]

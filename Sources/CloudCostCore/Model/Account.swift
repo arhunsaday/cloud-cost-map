@@ -39,6 +39,9 @@ public enum CredentialSource: Codable, Sendable, Hashable {
     /// Read at fetch time from a Scaleway CLI profile, so rotating a key in
     /// `~/.config/scw/config.yaml` needs no change here.
     case scalewayProfile(String)
+    /// Read at fetch time from an AWS CLI profile (`~/.aws/credentials` and
+    /// `~/.aws/config`) that holds access keys.
+    case awsProfile(String)
     /// No secret needed (demo data).
     case none
 
@@ -46,6 +49,7 @@ public enum CredentialSource: Codable, Sendable, Hashable {
         switch self {
         case .keychain: "Keychain"
         case .scalewayProfile(let name): "Scaleway CLI profile “\(name)”"
+        case .awsProfile(let name): "AWS CLI profile “\(name)”"
         case .none: "None"
         }
     }

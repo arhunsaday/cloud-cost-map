@@ -51,7 +51,10 @@ public enum ProviderFactory {
         case .scaleway:
             let config = try ScalewayProvider.Configuration.resolve(account: account, credentials: credentials)
             return ScalewayProvider(account: account, configuration: config, options: options)
-        case .aws, .azure, .gcp:
+        case .aws:
+            let config = try AWSProvider.Configuration.resolve(account: account, credentials: credentials)
+            return AWSProvider(account: account, configuration: config, options: options)
+        case .azure, .gcp:
             throw ProviderError.notImplemented(account.provider)
         }
     }

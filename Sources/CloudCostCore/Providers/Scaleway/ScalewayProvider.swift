@@ -25,7 +25,7 @@ public struct ScalewayProvider: CloudProvider {
                 }
                 return Configuration(secretKey: secret, organizationID: org,
                                      apiURL: profile.apiURL.flatMap(URL.init(string:)) ?? URL(string: "https://api.scaleway.com")!)
-            case .keychain, .none:
+            case .keychain, .none, .awsProfile:
                 guard let secret = credentials.secret("secret_key", for: account.id), !secret.isEmpty else {
                     throw ProviderError.missingCredential("secret key")
                 }

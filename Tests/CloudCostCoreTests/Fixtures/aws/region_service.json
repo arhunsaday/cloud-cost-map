@@ -1,0 +1,112 @@
+[
+ {
+  "GroupDefinitions": [],
+  "ResultsByTime": [
+   {
+    "TimePeriod": {
+     "Start": "2026-09-01",
+     "End": "2026-10-01"
+    },
+    "Estimated": false,
+    "Groups": [
+     {
+      "Keys": [
+       "us-east-1",
+       "Amazon Elastic Compute Cloud - Compute"
+      ],
+      "Metrics": {
+       "UnblendedCost": {
+        "Amount": "380",
+        "Unit": "USD"
+       }
+      }
+     },
+     {
+      "Keys": [
+       "us-east-1",
+       "EC2 - Other"
+      ],
+      "Metrics": {
+       "UnblendedCost": {
+        "Amount": "50",
+        "Unit": "USD"
+       }
+      }
+     },
+     {
+      "Keys": [
+       "us-east-1",
+       "Amazon Relational Database Service"
+      ],
+      "Metrics": {
+       "UnblendedCost": {
+        "Amount": "230",
+        "Unit": "USD"
+       }
+      }
+     },
+     {
+      "Keys": [
+       "us-east-1",
+       "Amazon Simple Storage Service"
+      ],
+      "Metrics": {
+       "UnblendedCost": {
+        "Amount": "40",
+        "Unit": "USD"
+       }
+      }
+     },
+     {
+      "Keys": [
+       "eu-west-1",
+       "Amazon Elastic Compute Cloud - Compute"
+      ],
+      "Metrics": {
+       "UnblendedCost": {
+        "Amount": "40",
+        "Unit": "USD"
+       }
+      }
+     },
+     {
+      "Keys": [
+       "NoRegion",
+       "Tax"
+      ],
+      "Metrics": {
+       "UnblendedCost": {
+        "Amount": "70",
+        "Unit": "USD"
+       }
+      }
+     }
+    ],
+    "Total": {}
+   },
+   {
+    "TimePeriod": {
+     "Start": "2026-10-01",
+     "End": "2026-11-01"
+    },
+    "Estimated": false,
+    "Groups": [
+     {
+      "Keys": [
+       "us-east-1",
+       "Amazon Elastic Compute Cloud - Compute"
+      ],
+      "Metrics": {
+       "UnblendedCost": {
+        "Amount": "100",
+        "Unit": "USD"
+       }
+      }
+     }
+    ],
+    "Total": {}
+   }
+  ],
+  "DimensionValueAttributes": []
+ }
+]

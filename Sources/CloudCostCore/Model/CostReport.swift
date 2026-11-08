@@ -106,6 +106,8 @@ public struct CostView: Codable, Sendable, Identifiable, Hashable {
     public static let service = "service"
     public static let project = "project"
     public static let region = "region"
+    /// AWS linked accounts.
+    public static let account = "account"
 }
 
 /// Something in the bill worth acting on.

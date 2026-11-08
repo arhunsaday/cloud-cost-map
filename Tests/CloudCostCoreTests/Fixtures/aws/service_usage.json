@@ -1,0 +1,172 @@
+[
+ {
+  "GroupDefinitions": [],
+  "ResultsByTime": [
+   {
+    "TimePeriod": {
+     "Start": "2026-09-01",
+     "End": "2026-10-01"
+    },
+    "Estimated": false,
+    "Groups": [
+     {
+      "Keys": [
+       "Amazon Elastic Compute Cloud - Compute",
+       "USE1-BoxUsage:m6i.large"
+      ],
+      "Metrics": {
+       "UnblendedCost": {
+        "Amount": "380",
+        "Unit": "USD"
+       }
+      }
+     },
+     {
+      "Keys": [
+       "Amazon Elastic Compute Cloud - Compute",
+       "EU-BoxUsage:t3.micro"
+      ],
+      "Metrics": {
+       "UnblendedCost": {
+        "Amount": "40",
+        "Unit": "USD"
+       }
+      }
+     },
+     {
+      "Keys": [
+       "Amazon Elastic Compute Cloud - Compute",
+       "USE1-BoxUsage:c5.large"
+      ],
+      "Metrics": {
+       "UnblendedCost": {
+        "Amount": "-5",
+        "Unit": "USD"
+       }
+      }
+     },
+     {
+      "Keys": [
+       "EC2 - Other",
+       "USE1-EBS:VolumeUsage.gp2"
+      ],
+      "Metrics": {
+       "UnblendedCost": {
+        "Amount": "20",
+        "Unit": "USD"
+       }
+      }
+     },
+     {
+      "Keys": [
+       "EC2 - Other",
+       "USE1-NatGateway-Hours"
+      ],
+      "Metrics": {
+       "UnblendedCost": {
+        "Amount": "18",
+        "Unit": "USD"
+       }
+      }
+     },
+     {
+      "Keys": [
+       "EC2 - Other",
+       "USE1-ElasticIP:IdleAddress"
+      ],
+      "Metrics": {
+       "UnblendedCost": {
+        "Amount": "4",
+        "Unit": "USD"
+       }
+      }
+     },
+     {
+      "Keys": [
+       "EC2 - Other",
+       "USE1-EBS:SnapshotUsage"
+      ],
+      "Metrics": {
+       "UnblendedCost": {
+        "Amount": "8",
+        "Unit": "USD"
+       }
+      }
+     },
+     {
+      "Keys": [
+       "Amazon Relational Database Service",
+       "USE1-InstanceUsage:db.r6g.large"
+      ],
+      "Metrics": {
+       "UnblendedCost": {
+        "Amount": "230",
+        "Unit": "USD"
+       }
+      }
+     },
+     {
+      "Keys": [
+       "Amazon Simple Storage Service",
+       "USE1-TimedStorage-ByteHrs"
+      ],
+      "Metrics": {
+       "UnblendedCost": {
+        "Amount": "25",
+        "Unit": "USD"
+       }
+      }
+     },
+     {
+      "Keys": [
+       "Amazon Simple Storage Service",
+       "USE1-DataTransfer-Out-Bytes"
+      ],
+      "Metrics": {
+       "UnblendedCost": {
+        "Amount": "15",
+        "Unit": "USD"
+       }
+      }
+     },
+     {
+      "Keys": [
+       "Tax",
+       ""
+      ],
+      "Metrics": {
+       "UnblendedCost": {
+        "Amount": "70",
+        "Unit": "USD"
+       }
+      }
+     }
+    ],
+    "Total": {}
+   },
+   {
+    "TimePeriod": {
+     "Start": "2026-10-01",
+     "End": "2026-11-01"
+    },
+    "Estimated": false,
+    "Groups": [
+     {
+      "Keys": [
+       "Amazon Elastic Compute Cloud - Compute",
+       "USE1-BoxUsage:m6i.large"
+      ],
+      "Metrics": {
+       "UnblendedCost": {
+        "Amount": "100",
+        "Unit": "USD"
+       }
+      }
+     }
+    ],
+    "Total": {}
+   }
+  ],
+  "DimensionValueAttributes": []
+ }
+]
