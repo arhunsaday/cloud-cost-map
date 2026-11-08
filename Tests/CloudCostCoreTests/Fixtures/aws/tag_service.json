@@ -1,0 +1,148 @@
+[
+ {
+  "GroupDefinitions": [],
+  "ResultsByTime": [
+   {
+    "TimePeriod": {
+     "Start": "2026-09-01",
+     "End": "2026-10-01"
+    },
+    "Estimated": false,
+    "Groups": [
+     {
+      "Keys": [
+       "Environment$production",
+       "Amazon Elastic Compute Cloud - Compute"
+      ],
+      "Metrics": {
+       "UnblendedCost": {
+        "Amount": "280",
+        "Unit": "USD"
+       }
+      }
+     },
+     {
+      "Keys": [
+       "Environment$staging",
+       "Amazon Elastic Compute Cloud - Compute"
+      ],
+      "Metrics": {
+       "UnblendedCost": {
+        "Amount": "20",
+        "Unit": "USD"
+       }
+      }
+     },
+     {
+      "Keys": [
+       "Environment$",
+       "Amazon Elastic Compute Cloud - Compute"
+      ],
+      "Metrics": {
+       "UnblendedCost": {
+        "Amount": "120",
+        "Unit": "USD"
+       }
+      }
+     },
+     {
+      "Keys": [
+       "Environment$production",
+       "Amazon Relational Database Service"
+      ],
+      "Metrics": {
+       "UnblendedCost": {
+        "Amount": "200",
+        "Unit": "USD"
+       }
+      }
+     },
+     {
+      "Keys": [
+       "Environment$marketing",
+       "Amazon Simple Storage Service"
+      ],
+      "Metrics": {
+       "UnblendedCost": {
+        "Amount": "10",
+        "Unit": "USD"
+       }
+      }
+     },
+     {
+      "Keys": [
+       "Environment$",
+       "EC2 - Other"
+      ],
+      "Metrics": {
+       "UnblendedCost": {
+        "Amount": "50",
+        "Unit": "USD"
+       }
+      }
+     },
+     {
+      "Keys": [
+       "Environment$",
+       "Amazon Relational Database Service"
+      ],
+      "Metrics": {
+       "UnblendedCost": {
+        "Amount": "30",
+        "Unit": "USD"
+       }
+      }
+     },
+     {
+      "Keys": [
+       "Environment$",
+       "Amazon Simple Storage Service"
+      ],
+      "Metrics": {
+       "UnblendedCost": {
+        "Amount": "30",
+        "Unit": "USD"
+       }
+      }
+     },
+     {
+      "Keys": [
+       "Environment$",
+       "Tax"
+      ],
+      "Metrics": {
+       "UnblendedCost": {
+        "Amount": "70",
+        "Unit": "USD"
+       }
+      }
+     }
+    ],
+    "Total": {}
+   },
+   {
+    "TimePeriod": {
+     "Start": "2026-10-01",
+     "End": "2026-11-01"
+    },
+    "Estimated": false,
+    "Groups": [
+     {
+      "Keys": [
+       "Environment$production",
+       "Amazon Elastic Compute Cloud - Compute"
+      ],
+      "Metrics": {
+       "UnblendedCost": {
+        "Amount": "100",
+        "Unit": "USD"
+       }
+      }
+     }
+    ],
+    "Total": {}
+   }
+  ],
+  "DimensionValueAttributes": []
+ }
+]

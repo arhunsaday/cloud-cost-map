@@ -53,22 +53,46 @@ public enum ProviderKind: String, Codable, Sendable, CaseIterable, Identifiable 
     /// Whether a working implementation exists. Others are listed as coming soon.
     public var isAvailable: Bool {
         switch self {
-        case .scaleway, .demo: true
-        case .aws, .azure, .gcp: false
+        case .scaleway, .aws, .demo: true
+        case .azure, .gcp: false
         }
     }
 
     public var blurb: String {
         switch self {
         case .scaleway: "Billing API plus inventory, so costs are split by environment and resource."
-        case .aws: "Cost Explorer, grouped by service, account and tag."
+        case .aws: "Cost Explorer, split by environment tag or account, service, usage type and region."
         case .azure: "Cost Management queries per subscription."
         case .gcp: "BigQuery billing export."
         case .demo: "A realistic fictional company, to try the app without credentials."
         }
     }
 
-    /// What the add-account form asks for.
+    /// Shortest automatic refresh interval. Cost Explorer bills every request
+    /// and only updates its data a few times a day, so polling it hourly would
+    /// cost money for nothing. Manual refreshes are not limited.
+    public var minimumAutoRefreshHours: Int {
+        self == .aws ? 6 : 0
+    }
+
+    /// Whether keys can come from the provider's own CLI configuration.
+    public var supportsCLIProfiles: Bool {
+        self == .scaleway || self == .aws
+    }
+
+    /// Settings asked for whatever the credential source, including when keys
+    /// come from a CLI profile.
+    public var options: [CredentialField] {
+        self == .aws ? Self.awsOptions : []
+    }
+
+    private static let awsOptions = [
+        CredentialField(key: AWSProvider.environmentTagKey, label: "Environment tag", placeholder: "Optional, e.g. Environment", isSecret: false,
+                        help: "A cost allocation tag whose value names the environment. Without it, environments are read from account names.",
+                        isOptional: true),
+    ]
+
+    /// The credentials the add-account form asks for when keys are typed in.
     public var fields: [CredentialField] {
         switch self {
         case .scaleway:
@@ -80,8 +104,11 @@ public enum ProviderKind: String, Codable, Sendable, CaseIterable, Identifiable 
             ]
         case .aws:
             [
-                CredentialField(key: "access_key_id", label: "Access key ID", placeholder: "AKIA…", isSecret: false, help: nil),
+                CredentialField(key: "access_key_id", label: "Access key ID", placeholder: "AKIA…", isSecret: false,
+                                help: "An IAM user key allowed ce:GetCostAndUsage. Use the management (payer) account to see every linked account."),
                 CredentialField(key: "secret_access_key", label: "Secret access key", placeholder: "", isSecret: true, help: nil),
+                CredentialField(key: "session_token", label: "Session token", placeholder: "Only for temporary keys", isSecret: true,
+                                help: "Needed with temporary (ASIA…) credentials only.", isOptional: true),
             ]
         case .azure:
             [
@@ -108,12 +135,15 @@ public struct CredentialField: Sendable, Hashable, Identifiable {
     public var placeholder: String
     public var isSecret: Bool
     public var help: String?
+    /// The form can be submitted with this left empty.
+    public var isOptional: Bool
 
-    public init(key: String, label: String, placeholder: String, isSecret: Bool, help: String?) {
+    public init(key: String, label: String, placeholder: String, isSecret: Bool, help: String?, isOptional: Bool = false) {
         self.key = key
         self.label = label
         self.placeholder = placeholder
         self.isSecret = isSecret
         self.help = help
+        self.isOptional = isOptional
     }
 }
