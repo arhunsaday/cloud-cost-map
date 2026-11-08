@@ -113,8 +113,9 @@ final class AppModel {
             while !Task.isCancelled {
                 guard let self else { return }
                 let hours = preferences.refreshIntervalHours
-                let threshold = Date.now.addingTimeInterval(-Double(max(hours, 1)) * 3600)
                 for account in accounts where account.isEnabled {
+                    let interval = max(hours, account.provider.minimumAutoRefreshHours, 1)
+                    let threshold = Date.now.addingTimeInterval(-Double(interval) * 3600)
                     let missing = periods.contains { reports[account.id]?[$0] == nil }
                     if missing || (hours > 0 && (lastUpdated(account.id) ?? .distantPast) < threshold) {
                         Task { await self.refresh(account.id) }
@@ -180,6 +181,28 @@ final class AppModel {
             let account = Account(name: profile.name.replacingOccurrences(of: "-", with: " ").capitalized, provider: .scaleway,
                                   settings: ["organization_id": profile.organizationID ?? ""],
                                   credentialSource: .scalewayProfile(profile.name))
+            accounts.append(account)
+            added += 1
+            Task { await refresh(account.id) }
+        }
+        storage.save(accounts: accounts)
+        if added > 0, let last = accounts.last { selection = .account(last.id) }
+        return added
+    }
+
+    /// Links every AWS CLI profile holding access keys that is not already linked.
+    @discardableResult
+    func importAWSProfiles() -> Int {
+        guard let config = AWSCLIConfig.load() else { return 0 }
+        let linked = Set(accounts.compactMap { a -> String? in
+            if case .awsProfile(let name) = a.credentialSource { return name }
+            return nil
+        })
+        var added = 0
+        for profile in config.profiles where profile.isUsable && !linked.contains(profile.name) {
+            if profile.name == "default", config.profiles.contains(where: { $0.name != "default" && $0.accessKeyID == profile.accessKeyID }) { continue }
+            let name = profile.name == "default" ? "AWS" : "AWS \(profile.name.replacingOccurrences(of: "-", with: " ").capitalized)"
+            let account = Account(name: name, provider: .aws, credentialSource: .awsProfile(profile.name))
             accounts.append(account)
             added += 1
             Task { await refresh(account.id) }

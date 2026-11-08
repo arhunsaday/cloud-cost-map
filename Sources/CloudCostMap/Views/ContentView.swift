@@ -40,6 +40,7 @@ struct ContentView: View {
 struct WelcomeView: View {
     @Environment(AppModel.self) private var model
     private let cliProfiles = ScalewayCLIConfig.load()?.profiles.filter(\.isUsable) ?? []
+    private let awsProfiles = AWSCLIConfig.load()?.profiles.filter(\.isUsable) ?? []
 
     var body: some View {
         VStack(spacing: 28) {
@@ -61,6 +62,19 @@ struct WelcomeView: View {
                     .buttonStyle(.borderedProminent)
                     .controlSize(.large)
                     Text(cliProfiles.map(\.name).joined(separator: ", "))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                if !awsProfiles.isEmpty {
+                    Button {
+                        model.importAWSProfiles()
+                    } label: {
+                        Label("Import \(awsProfiles.count) AWS CLI profile\(awsProfiles.count == 1 ? "" : "s")", systemImage: "square.and.arrow.down")
+                            .frame(maxWidth: 280)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.large)
+                    Text(awsProfiles.map(\.name).joined(separator: ", "))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }

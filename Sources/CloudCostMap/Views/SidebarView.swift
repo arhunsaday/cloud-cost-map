@@ -30,6 +30,7 @@ struct SidebarView: View {
                 Menu {
                     Button("Add Account…") { model.isAddingAccount = true }
                     Button("Import Scaleway CLI Profiles") { model.importScalewayProfiles() }
+                    Button("Import AWS CLI Profiles") { model.importAWSProfiles() }
                     Button("Add Demo Account") { model.addDemoAccount() }
                 } label: {
                     Label("Add Account", systemImage: "plus")
