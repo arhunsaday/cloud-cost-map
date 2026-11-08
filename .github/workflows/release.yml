@@ -1,0 +1,217 @@
+name: Release
+
+# Builds a signed, notarized Cloud Cost Map DMG and publishes it as a GitHub Release.
+#
+# Normal path — push a version tag:
+#
+#   git tag v1.2.3 && git push origin v1.2.3
+#
+# Or run it from the Actions tab ("Run workflow"), give it a version, and tick
+# "publish" — `gh release create` creates the tag for you.
+#
+# Signing and notarization use the repository secrets listed in
+# README › Distribution › CI. The same scripts/release.sh runs locally.
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to build, e.g. 1.2.3"
+        required: true
+        default: "0.0.0-dev"
+      publish:
+        description: "Publish a GitHub Release (creates tag v<version> at this commit)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write # create the release, upload the DMG, create the tag
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build, notarize & publish
+    runs-on: macos-15
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # full history: build number = commit count, changelog since the previous tag
+
+      - name: Resolve version
+        id: version
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+          INPUT_PUBLISH: ${{ inputs.publish }}
+        run: |
+          set -euo pipefail
+          if [ "${GITHUB_REF_TYPE}" = "tag" ]; then
+            version="${GITHUB_REF_NAME#v}"   # v1.2.3 -> 1.2.3
+            publish=true
+          else
+            version="${INPUT_VERSION}"
+            publish="${INPUT_PUBLISH:-false}"
+          fi
+
+          if [ -z "$version" ]; then
+            echo "::error::Could not determine a version to build."
+            exit 1
+          fi
+
+          # Anything with a hyphen (1.2.3-rc1, 0.0.0-dev) is a pre-release.
+          case "$version" in
+            *-*) prerelease=true ;;
+            *)   prerelease=false ;;
+          esac
+
+          {
+            echo "version=$version"
+            echo "tag=v${version}"
+            echo "publish=$publish"
+            echo "prerelease=$prerelease"
+            echo "dmg=dist/Cloud-Cost-Map-${version}.dmg"
+          } >> "$GITHUB_OUTPUT"
+
+          echo "Cloud Cost Map $version (publish=$publish, prerelease=$prerelease)"
+
+      - name: Show toolchain
+        run: |
+          sw_vers
+          xcodebuild -version
+          swift --version
+
+      - name: Set up signing and notarization
+        env:
+          DEVELOPER_ID_P12: ${{ secrets.DEVELOPER_ID_P12 }}
+          DEVELOPER_ID_P12_PASSWORD: ${{ secrets.DEVELOPER_ID_P12_PASSWORD }}
+          NOTARY_KEY_P8: ${{ secrets.NOTARY_KEY_P8 }}
+          NOTARY_KEY_ID: ${{ secrets.NOTARY_KEY_ID }}
+          NOTARY_ISSUER_ID: ${{ secrets.NOTARY_ISSUER_ID }}
+        run: |
+          set -euo pipefail
+          missing=()
+          for name in DEVELOPER_ID_P12 DEVELOPER_ID_P12_PASSWORD NOTARY_KEY_P8 NOTARY_KEY_ID NOTARY_ISSUER_ID; do
+            [ -n "${!name}" ] || missing+=("$name")
+          done
+          if [ "${#missing[@]}" -gt 0 ]; then
+            echo "::error::Missing repository secrets: ${missing[*]} (see README › Distribution › CI)"
+            exit 1
+          fi
+
+          keychain="$RUNNER_TEMP/signing.keychain-db"
+          password="$(uuidgen)"
+          security create-keychain -p "$password" "$keychain"
+          security set-keychain-settings -lut 21600 "$keychain"
+          security unlock-keychain -p "$password" "$keychain"
+
+          printf '%s' "$DEVELOPER_ID_P12" | base64 --decode > "$RUNNER_TEMP/developer-id.p12"
+          security import "$RUNNER_TEMP/developer-id.p12" -k "$keychain" -f pkcs12 \
+            -P "$DEVELOPER_ID_P12_PASSWORD" -T /usr/bin/codesign
+          rm -f "$RUNNER_TEMP/developer-id.p12"
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$password" "$keychain" >/dev/null
+          # Prepend to the search list so codesign and find-identity see it.
+          existing=()
+          while IFS= read -r line; do existing+=("$(sed 's/^ *"//; s/"$//' <<<"$line")"); done \
+            < <(security list-keychains -d user)
+          security list-keychains -d user -s "$keychain" "${existing[@]}"
+          security find-identity -v -p codesigning "$keychain"
+
+          printf '%s\n' "$NOTARY_KEY_P8" > "$RUNNER_TEMP/notary.p8"
+          xcrun notarytool store-credentials notary \
+            --key "$RUNNER_TEMP/notary.p8" --key-id "$NOTARY_KEY_ID" --issuer "$NOTARY_ISSUER_ID" \
+            --keychain "$keychain"
+          rm -f "$RUNNER_TEMP/notary.p8"
+
+          echo "NOTARY_KEYCHAIN=$keychain" >> "$GITHUB_ENV"
+
+      - name: Build, sign, notarize, package
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: scripts/release.sh "$VERSION"
+
+      # Always available, even for dry runs or if publishing fails.
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Cloud-Cost-Map-${{ steps.version.outputs.version }}-macOS
+          path: ${{ steps.version.outputs.dmg }}
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Write release notes
+        if: steps.version.outputs.publish == 'true'
+        env:
+          DMG: ${{ steps.version.outputs.dmg }}
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          set -euo pipefail
+          name="$(basename "$DMG")"
+          sha="$(shasum -a 256 "$DMG" | awk '{print $1}')"
+
+          {
+            echo "### Install"
+            echo
+            echo "Download **${name}**, open it and drag **Cloud Cost Map** into **Applications**."
+            echo "Universal (Apple Silicon + Intel), macOS 15 Sequoia or later. Signed and notarized by Apple."
+            echo
+            echo "### Verify"
+            echo
+            echo '```'
+            echo "SHA-256  ${sha}"
+            echo '```'
+          } > RELEASE_NOTES.md
+
+          # Changelog since the previous tag, if there is one. On a tag build the
+          # tag exists, so walk back from it; on a manual run it does not yet.
+          if git rev-parse -q --verify "refs/tags/${TAG}" >/dev/null; then
+            from="${TAG}^"; to="${TAG}"
+          else
+            from="HEAD"; to="HEAD"
+          fi
+          prev="$(git describe --tags --abbrev=0 "$from" 2>/dev/null || true)"
+          if [ -n "$prev" ]; then
+            {
+              echo
+              echo "### Changes since ${prev}"
+              echo
+              git log --no-merges --pretty='- %s (%h)' "${prev}..${to}"
+            } >> RELEASE_NOTES.md
+          fi
+
+          {
+            echo
+            echo "---"
+            echo "Built from \`${GITHUB_SHA}\` by [run #${GITHUB_RUN_NUMBER}](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID})."
+          } >> RELEASE_NOTES.md
+
+          cat RELEASE_NOTES.md
+
+      - name: Publish release
+        if: steps.version.outputs.publish == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DMG: ${{ steps.version.outputs.dmg }}
+          TAG: ${{ steps.version.outputs.tag }}
+          TITLE: Cloud Cost Map ${{ steps.version.outputs.version }}
+          PRERELEASE: ${{ steps.version.outputs.prerelease }}
+        run: |
+          set -euo pipefail
+          args=(--title "$TITLE" --notes-file RELEASE_NOTES.md --target "$GITHUB_SHA")
+          if [ "$PRERELEASE" = "true" ]; then
+            args+=(--prerelease)
+          fi
+          # Creates the tag too, if it does not already exist.
+          gh release create "$TAG" "$DMG" "${args[@]}"
+          echo "Published ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/releases/tag/${TAG}"
+
+      - name: Remove signing keychain
+        if: always()
+        run: security delete-keychain "$RUNNER_TEMP/signing.keychain-db" 2>/dev/null || true

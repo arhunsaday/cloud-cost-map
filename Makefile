@@ -1,4 +1,4 @@
-.PHONY: build test app run brand open clean
+.PHONY: build test app run dmg brand open clean
 
 build:
 	swift build
@@ -12,6 +12,10 @@ app:
 
 run: app
 	open "build/Cloud Cost Map.app"
+
+# Signed, notarized DMG in dist/ (README › Distribution). make dmg VERSION=1.0.0
+dmg:
+	scripts/release.sh $(VERSION)
 
 # Regenerate the icon and logo from scripts/brand.swift
 brand:

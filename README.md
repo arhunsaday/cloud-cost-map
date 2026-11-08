@@ -43,6 +43,7 @@ make run        # builds build/Cloud Cost Map.app and opens it
 make test       # unit tests (no network)
 make open       # open the package in Xcode, run the CloudCostMap scheme
 make brand      # regenerate the icon and logo
+make dmg        # signed, notarized DMG in dist/ (see Distribution)
 ```
 
 Live check against a real Scaleway account (read-only):
@@ -71,7 +72,7 @@ Sources/
     Support/                Keychain, on-disk cache, palette and formatting
     Views/                  sidebar, overview, dashboard, charts, inspector, settings, menu bar
 Tests/CloudCostCoreTests/   allocation against fixtures, layouts, parsing, opt-in live test
-scripts/                    brand.swift (icon + SVG from one geometry), bundle.sh (.app)
+scripts/                    brand.swift (icon + SVG from one geometry), bundle.sh (.app), release.sh + distribute.sh (DMG)
 ```
 
 **The one idea:** every provider produces a `CostReport` holding one or more `CostView`s, each a `CostNode` tree. Everything the user sees — charts, table, inspector, insights, trends, budget, menu bar, export — reads only that. Colours come from each node's `colorKey`, so *Compute* is the same blue in every view, month and account.
@@ -90,10 +91,66 @@ scripts/                    brand.swift (icon + SVG from one geometry), bundle.s
 The parts that are not about cloud costs carry over to any macOS app:
 
 - **Package layout** — a UI-free core library, a thin SwiftUI executable, and tests, all in `Package.swift` with no Xcode project to merge.
-- **`scripts/bundle.sh` + `Resources/Info.plist`** — a signed `.app` from `swift build`.
+- **`scripts/bundle.sh` + `Resources/Info.plist`** — a signed `.app` from `swift build`; `scripts/distribute.sh` turns any `.app` into a notarized DMG.
 - **`scripts/brand.swift`** — icon set, `.icns` and SVG logo from one drawing, reproducible on CI.
 - **App shell** — `NavigationSplitView` sidebar + inspector, Settings scene, MenuBarExtra, commands, `Preferences` backed by `UserDefaults`, `KeychainStore`, JSON `Storage` in Application Support.
 
 ## Distribution
 
-`bundle.sh` signs ad hoc, which is fine on your own Mac. To share the app, sign with a Developer ID (`codesign --options runtime --sign "Developer ID Application: …"`) and notarize (`xcrun notarytool submit … --wait`, then `xcrun stapler staple`).
+Releases are DMGs signed with a **Developer ID** and **notarized** by Apple, so they open on any Mac
+with no Gatekeeper warning. Builds are universal (Apple Silicon + Intel).
+
+| Script | What it does |
+| --- | --- |
+| [`scripts/release.sh`](scripts/release.sh) `[version]` | Universal release bundle (`bundle.sh`), then `distribute.sh` → `dist/Cloud-Cost-Map-<version>.dmg` |
+| [`scripts/distribute.sh`](scripts/distribute.sh) `<app> <dmg>` | Developer ID signature with the hardened runtime, notarizes and staples the app, wraps it in a DMG, signs, notarizes and staples the DMG |
+
+`distribute.sh` is identical in [timelet](https://github.com/arhunsaday/timelet). `make dmg VERSION=1.0.0` is a shortcut for `scripts/release.sh 1.0.0`.
+
+### One-time setup on your Mac
+
+1. **Certificate.** Xcode → Settings → Accounts → your team → **Manage Certificates…** → **+** →
+   **Developer ID Application**. Only the team's Account Holder can create one.
+2. **Notarization credentials**, stored in the login keychain under the profile name `notary`.
+   Create an app-specific password at [account.apple.com](https://account.apple.com) (Sign-In and
+   Security → App-Specific Passwords), find your Team ID at
+   [developer.apple.com/account](https://developer.apple.com/account) (Membership details), then:
+
+   ```bash
+   xcrun notarytool store-credentials notary --apple-id you@example.com --team-id ABCDE12345
+   ```
+
+### Building a release by hand
+
+```bash
+scripts/release.sh 1.2.0
+```
+
+`NOTARIZE=0 scripts/release.sh` signs without notarizing, for a quick check (other Macs will block that
+DMG). `DEVELOPER_ID="Developer ID Application: …"` picks an identity if you have several.
+
+Publish it by attaching the DMG to a GitHub Release (Releases → Draft a new release, tag `v1.2.0`).
+
+### CI
+
+[`release.yml`](.github/workflows/release.yml) runs the same script on a `macos-15` runner and publishes
+a GitHub Release. Trigger it by pushing a tag; the version is taken from the tag name:
+
+```bash
+git tag v1.2.3
+git push origin v1.2.3
+```
+
+Or **Actions → Release → Run workflow**, enter the version and tick **publish**. Leaving **publish**
+unticked builds and uploads the DMG as a workflow artifact only. A version with a hyphen
+(`v1.2.3-rc1`) is published as a pre-release.
+
+`release.yml` needs these repository secrets (Settings → Secrets and variables → Actions):
+
+| Secret | Value |
+| --- | --- |
+| `DEVELOPER_ID_P12` | The Developer ID Application certificate **with its private key**, exported from Keychain Access as `.p12`, then base64: `base64 -i DeveloperID.p12 \| pbcopy` |
+| `DEVELOPER_ID_P12_PASSWORD` | The password chosen during that export |
+| `NOTARY_KEY_P8` | Contents of an App Store Connect API key `AuthKey_XXXXXX.p8` (Users and Access → Integrations → Team Keys, role *Developer*) |
+| `NOTARY_KEY_ID` | That key's ID |
+| `NOTARY_ISSUER_ID` | The Issuer ID shown above the key list |
